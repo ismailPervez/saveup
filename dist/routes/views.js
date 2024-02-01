@@ -14,7 +14,7 @@ router.get('/login', (request, response) => {
 router.get('/register', (request, response) => {
     response.render('register');
 });
-router.get('/dashboard', authenticateToken, (request, response) => {
+router.get('/', authenticateToken, (request, response) => {
     // Get user
     const user = request.body.user;
     // Get user's saving goals
