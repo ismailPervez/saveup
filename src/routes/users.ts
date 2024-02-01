@@ -146,7 +146,8 @@ router.post('/login', (request: Request, response: Response) => {
             response.cookie('token', token, {
                 httpOnly: true,
                 secure: false,
-                maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+                sameSite: 'none'
             });
 
             response
