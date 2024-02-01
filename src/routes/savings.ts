@@ -4,6 +4,8 @@ import pool from "../database";
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
+dotenv.config();
+
 const router = Router();
 
 router.post('/post', authenticateToken, (request: Request, response: Response) => {
