@@ -4,6 +4,7 @@ import userRouter from './routes/users';
 import goalRouter from './routes/goals';
 import savingRouter from './routes/savings';
 import bodyParser from 'body-parser'; // For parsing incoming request bodies
+const cors = require('cors');
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(cors());
 app.use('/users', userRouter);
 app.use('/goals', goalRouter);
 app.use('/savings', savingRouter);
