@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: '*'
+    origin: 'https://saveupapp.netlify.app'
 }));
 app.use('/users', userRouter);
 app.use('/goals', goalRouter);
