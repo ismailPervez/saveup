@@ -14,7 +14,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set('views', '/views');
 app.use(express_1.default.static('public'));
 app.use(body_parser_1.default.json());
 app.use('/', views_1.default);
