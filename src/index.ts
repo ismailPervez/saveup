@@ -12,7 +12,9 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: '*'
+}));
 app.use('/users', userRouter);
 app.use('/goals', goalRouter);
 app.use('/savings', savingRouter);

@@ -14,7 +14,9 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 app.use(body_parser_1.default.json());
-app.use(cors());
+app.use(cors({
+    origin: '*'
+}));
 app.use('/users', users_1.default);
 app.use('/goals', goals_1.default);
 app.use('/savings', savings_1.default);
