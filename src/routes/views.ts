@@ -15,7 +15,7 @@ router.get('/register', (request: Request, response: Response) => {
     response.render('register');
 });
 
-router.get('/dashboard', authenticateToken, (request: Request, response: Response) => {
+router.get('/', authenticateToken, (request: Request, response: Response) => {
     // Get user
     const user = request.body.user;
 

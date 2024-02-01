@@ -29,7 +29,7 @@ form.addEventListener('submit', (e) => {
             if (data.status == 'failed') {
                 alert(data.message);
             } else {
-                window.location.href = '/dashboard';
+                window.location.href = '/';
                 console.log(data);
             }
         })
