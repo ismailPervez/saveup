@@ -7,6 +7,7 @@ const express_1 = require("express");
 const database_1 = __importDefault(require("../database"));
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+dotenv.config();
 const router = (0, express_1.Router)();
 router.post('/post', authenticateToken, (request, response) => {
     /**
