@@ -10,6 +10,9 @@ const saltRounds = 10;
 
 const router = Router();
 
+/**
+ * Registration endpoint for user
+ */
 router.post('/register', (request: Request, response: Response) => {
     /**
      * POST /users/register
@@ -72,6 +75,9 @@ router.post('/register', (request: Request, response: Response) => {
         });
 })
 
+/**
+ * Login endpoint for user
+ */
 router.post('/login', (request: Request, response: Response) => {
     /**
      * POST /users/login
@@ -159,6 +165,28 @@ router.post('/login', (request: Request, response: Response) => {
                 });
         }
     });
+})
+
+/**
+ * Reset password endpoing for user
+ */
+router.post('/reset-password', (request: Request, response: Response) => {
+    const { email } = request.body;
+
+    if (!email) {
+        response
+            .status(404)
+            .json({
+                message: 'Email is required',
+                status: 'failed'
+            });
+    }
+
+    // Create a JWT with time limit of 1 hour for reset
+    // const tokenExpiryTime = new Date() + time()
+    const token = jwt.sign({ email: email, expires_at: 1 }, process.env.JWT_SECRET);
+
+    // Send reset email
 })
 
 export default router;

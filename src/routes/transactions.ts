@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import pool from "../database";
 
 const jwt = require('jsonwebtoken');
@@ -11,15 +11,14 @@ const router = Router();
 router.post('/post', authenticateToken, (request: Request, response: Response) => {
     /**
      * POST /savings/add
-     * DATA: {amount: number, name: string, frequency: (daily | weekly | monthly)}
+     * DATA: {amount: number, goalId: number (id)}
      * AUTH: Bearer <token>
      */
-
     // Get user
     const user = request.body.user;
 
     // Validate the request body
-    const { amount, name, frequency } = request.body;
+    const { amount, goalId } = request.body;
 
     if (!amount) {
         response
@@ -30,37 +29,17 @@ router.post('/post', authenticateToken, (request: Request, response: Response) =
             });
     }
 
-    else if (!name) {
+    else if (!goalId) {
         response
             .status(400)
             .json({
-                message: 'Name is required',
+                message: 'Goal is required',
                 status: 'failed'
             });
     }
 
-    else if (!frequency) {
-        response
-            .status(400)
-            .json({
-                message: 'Frequency is required',
-                status: 'failed'
-            });
-    }
-
-    // Check if frequency is daily and if so, check if weekend is included or not
-    if (frequency === 'daily' && !request.body.include_weekend) {
-        response
-            .status(400)
-            .json({
-                message: 'Please specify if weekend is included or not',
-                status: 'failed'
-            });
-
-    }
-
-    // Create saving goal for the user
-    pool.query(`INSERT INTO saving_goal (user_id, amount, name, frequency, include_weekend) VALUES ('${user.id}', '${amount}', '${name}', '${frequency}', '${request.body.include_weekend}')`, (error: any, result: any) => {
+    // Check if goal exists
+    pool.query(`SELECT * FROM saving_goal WHERE id = '${goalId}'`, (error: any, result: any) => {
         if (error) {
             console.log(error);
             response
@@ -71,13 +50,54 @@ router.post('/post', authenticateToken, (request: Request, response: Response) =
                 });
         }
 
-        else {
+        // If user has no saving goals
+        if (result.length === 0) {
             response
-                .status(200)
+                .status(404)
                 .json({
-                    message: 'Saving goal created successfully',
-                    status: 'success'
+                    message: 'No saving goals found',
+                    status: 'failed'
                 });
+        }
+
+        else {
+            const goals = result.rows[0];
+            // If user has goal, add savings for that goal, then update the goal's progress (amount_saved)
+            pool.query(`INSERT INTO saving (amount, goal_id, user_id) VALUES ('${amount}', '${goalId}', ${user.id})`, (error: any, result: any) => {
+                if (error) {
+                    console.log(error);
+                    response
+                        .status(500)
+                        .json({
+                            message: 'An error occurred',
+                            status: 'failed'
+                        });
+                }
+
+                else {
+                    // Update goal's progress
+                    pool.query(`UPDATE saving_goal SET amount_saved = amount_saved + ${amount} WHERE id = '${goalId}'`, (error: any, result: any) => {
+                        if (error) {
+                            console.log(error);
+                            response
+                                .status(500)
+                                .json({
+                                    message: 'An error occurred',
+                                    status: 'failed'
+                                });
+                        }
+
+                        else {
+                            response
+                                .status(200)
+                                .json({
+                                    message: 'Savings added successfully',
+                                    status: 'success'
+                                });
+                        }
+                    });
+                }
+            });
         }
     });
 })
@@ -86,14 +106,13 @@ router.get('/get', authenticateToken, (request: Request, response: Response) => 
     /**
      * GET /savings/get
      * AUTH: Bearer <token>
-     * ALLOWED PARAMS: {frequency: (daily | weekly | monthly), id: string, name: string}
      */
 
     // Get user
     const user = request.body.user;
 
     // Get user's saving goals
-    pool.query(`SELECT * FROM saving_goal WHERE user_id = '${user.id}'`, (error: any, result: any) => {
+    pool.query(`SELECT saving.*, saving_goal.name as goal_name FROM saving LEFT JOIN saving_goal ON saving_goal.id = saving.goal_id WHERE saving.user_id = '${user.id}'`, (error: any, result: any) => {
         if (error) {
             console.log(error);
             response
@@ -109,21 +128,21 @@ router.get('/get', authenticateToken, (request: Request, response: Response) => 
             response
                 .status(200)
                 .json({
-                    message: 'User has no saving goals',
+                    message: 'User has no savings',
                     status: 'success'
                 });
         }
 
         // If user has saving goals
         else {
-            const goals = result.rows;
+            const savings = result.rows;
             // If user has saving goals
             response
                 .status(200)
                 .json({
-                    message: 'Saving goals retrieved successfully',
+                    message: 'User has savings',
                     status: 'success',
-                    data: goals
+                    data: savings
                 });
         }
     });

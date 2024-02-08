@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/stylesheet" href="css/main.css">
+    <link rel="stylesheet" type="text/stylesheet" href="css/login.css">
+
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap');
+
+        :root {
+            --primary-color: #0EDE73;
+            --primary-font: 'Poppins', sans-serif;
+        }
+
+        * {
+            font-family: var(--primary-font);
+            font-weight: 300;
+        }
+
+        .btn {
+            text-transform: uppercase;
+        }
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:disabled {
+            background-color: darkslategrey;
+            border-color: darkslategray;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+
+        #form-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* background-image: url('https://images.pexels.com/photos/259132/pexels-photo-259132.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); */
+            background-size: cover;
+        }
+
+        #form-container>.card {
+            width: 30% !important;
+        }
+    </style>
+    <div id="form-container">
+        <div class="card bg-light shadow-none border-0">
+            <form id="register-form" class="card-body">
+                <img src="https://saveupapp.netlify.app/public/images/saveuplogo.png" alt="" height="100px">
+                <h6 class="mb-3">Create an account</h6>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" name="firstName" id="firstName"
+                            class="form-control shadow-none border-success">
+                        <span class="text-danger error firstName d-none fs-6"></span>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" name="lastName" id="lastName"
+                            class="form-control shadow-none border-success">
+                        <span class="text-danger error lastName d-none fs-6"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email">Email *</label>
+                    <input type="email" name="email" id="email" class="form-control shadow-none border-success">
+                    <span class="text-danger error email d-none fs-6"></span>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <label for="password">Password *</label>
+                    </div>
+                    <input type="password" name="password" id="password"
+                        class="form-control shadow-none border-success">
+                    <span class="text-danger error password d-none fs-6"></span>
+                </div>
+                <button class="btn btn-primary mb-3" id="submit-register">Register <div
+                        class="spinner-border spinner-border-sm ms-2 d-none"></div>
+                </button>
+                <span class="d-block">Already have an account? <a href="/login"
+                        class="text-primary text-decoration-none">log
+                        in here</a></span>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script>
+        const registrationForm = document.querySelector("#register-form");
+        const registerInputs = registrationForm.querySelectorAll('input');
+
+        const formData = {};
+
+        registerInputs.forEach(input => {
+            input.addEventListener("input", (e) => {
+                let error = registrationForm.querySelector(`.error.${e.target.id}`);
+                if (e.target.value != '') {
+                    error.classList.add('d-none');
+                    formData[e.target.id] = e.target.value;
+                }
+
+                else {
+                    error.textContent = 'This field is required'
+                    error.classList.remove('d-none');
+                }
+            })
+        })
+
+        registerForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+
+        })
+    </script>
+</body>
+
+</html>
