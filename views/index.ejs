@@ -15,6 +15,34 @@
 </head>
 
 <body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap');
+
+        :root {
+            --primary-color: #0EDE73;
+            --primary-font: 'Poppins', sans-serif;
+        }
+
+        * {
+            font-family: var(--primary-font);
+            font-weight: 300;
+        }
+
+        .btn {
+            text-transform: uppercase;
+        }
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+    </style>
     <div class="modal" id="setgoalmodal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
