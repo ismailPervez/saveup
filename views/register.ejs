@@ -129,6 +129,10 @@
         registrationForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
+            let loader = e.target.querySelector('.spinner-border');
+            loader.classList.remove('d-none');
+            e.target.setAttribute('disabled', 'true');
+
             fetch('/users/register', {
                 headers: { 'Content-Type': 'application/json' },
                 method: 'POST',
@@ -136,7 +140,15 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
+                    loader.classList.add('d-none');
+                    e.target.removeAttribute('disabled');
+                    if (data.status == 'success') {
+                        window.location.href = '/login';
+                    }
+
+                    else {
+                        alert(data.message);
+                    }
                 })
         })
     </script>

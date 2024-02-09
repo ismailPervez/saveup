@@ -185,26 +185,4 @@ router.post('/login', (request: Request, response: Response) => {
     });
 })
 
-/**
- * Reset password endpoing for user
- */
-router.post('/reset-password', (request: Request, response: Response) => {
-    const { email } = request.body;
-
-    if (!email) {
-        response
-            .status(404)
-            .json({
-                message: 'Email is required',
-                status: 'failed'
-            });
-    }
-
-    // Create a JWT with time limit of 1 hour for reset
-    // const tokenExpiryTime = new Date() + time()
-    const token = jwt.sign({ email: email, expires_at: 1 }, process.env.JWT_SECRET);
-
-    // Send reset email
-})
-
 export default router;
