@@ -15,7 +15,8 @@ const port = process.env.PORT || 3000;
 
 // Set the view engine to ejs
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static('public'));
 
 app.use(bodyParser.json());
 app.use(cors({
@@ -23,8 +24,8 @@ app.use(cors({
 }));
 app.use('/', viewsRouter);
 app.use('/users', userRouter);
-app.use('/goals', goalRouter);
-app.use('/savings', savingRouter);
+app.use('/savings', goalRouter);
+app.use('/transactions', savingRouter);
 
 // Start the server and listen for incoming connections
 app.listen(port, () => {

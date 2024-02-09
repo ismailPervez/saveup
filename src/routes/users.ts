@@ -18,13 +18,31 @@ router.post('/register', (request: Request, response: Response) => {
      * POST /users/register
      * DATA: {username: string, password: string}
      */
-    const { username, password } = request.body;
+    const { firstName, lastName, email, password } = request.body;
 
-    if (!username) {
+    if (!email) {
         response
             .status(400)
             .json({
-                message: 'Username is required',
+                message: 'Email is required',
+                status: 'failed'
+            });
+    }
+
+    else if (!firstName) {
+        response
+            .status(400)
+            .json({
+                message: 'First name is required',
+                status: 'failed'
+            });
+    }
+
+    else if (!lastName) {
+        response
+            .status(400)
+            .json({
+                message: 'Last name is required',
                 status: 'failed'
             });
     }
@@ -40,7 +58,7 @@ router.post('/register', (request: Request, response: Response) => {
 
     // Check if user with username already exists
 
-    pool.query(`SELECT * FROM users WHERE username = '${username}'`, (error: any, result: any) => {
+    pool.query(`SELECT * FROM users WHERE email = '${email}'`, (error: any, result: any) => {
         if (error) {
             console.log(error);
         }
@@ -50,7 +68,7 @@ router.post('/register', (request: Request, response: Response) => {
             return response
                 .status(400)
                 .json({
-                    message: 'Username is already taken',
+                    message: 'Email is already taken',
                     status: 'failed'
                 });
         }
@@ -61,7 +79,7 @@ router.post('/register', (request: Request, response: Response) => {
 
     // Create user in the database
 
-    pool.query(`INSERT INTO users (username, password) VALUES ('${username}', '${hashedPassword}')`, (error: any, result: any) => {
+    pool.query(`INSERT INTO users (first_name, last_name, email, password) VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`, (error: any, result: any) => {
         if (error) {
             console.log(error);
         }
@@ -83,13 +101,13 @@ router.post('/login', (request: Request, response: Response) => {
      * POST /users/login
      * DATA: {username: string, password: string}
      */
-    const { username, password } = request.body;
+    const { email, password } = request.body;
 
-    if (!username) {
+    if (!email) {
         response
             .status(400)
             .json({
-                message: 'Username is required',
+                message: 'Email is required',
                 status: 'failed'
             });
     }
@@ -105,7 +123,7 @@ router.post('/login', (request: Request, response: Response) => {
 
     // Check if user with user exists
 
-    pool.query(`SELECT * FROM users WHERE username = '${username}'`, (error: any, result: any) => {
+    pool.query(`SELECT * FROM users WHERE email = '${email}'`, (error: any, result: any) => {
         if (error) {
             console.log(error);
         }
@@ -146,14 +164,14 @@ router.post('/login', (request: Request, response: Response) => {
             }
 
             // Create token
-            const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET);
+            const token = jwt.sign({ id: user.id, email: user.email, first_name: user.first_name, last_name: user.last_name }, process.env.JWT_SECRET);
 
             // Set token as httpOnly cookie
             response.cookie('token', token, {
                 httpOnly: true,
-                secure: false,
-                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-                sameSite: 'none'
+                // secure: false,
+                // maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+                // sameSite: 'none'
             });
 
             response

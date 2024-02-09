@@ -126,10 +126,18 @@
             })
         })
 
-        registerForm.addEventListener("submit", (e) => {
+        registrationForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
-
+            fetch('/users/register', {
+                headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                body: JSON.stringify(formData)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                })
         })
     </script>
 </body>

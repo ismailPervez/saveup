@@ -32,7 +32,7 @@ submitSaveBtn.addEventListener('click', (e) => {
     loader.classList.remove('d-none');
     e.target.setAttribute('disabled', 'true');
 
-    fetch('/savings/post', {
+    fetch('/transactions/post', {
         method: 'POST',
         body: JSON.stringify(data),
         credentials: 'include',

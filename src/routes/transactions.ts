@@ -102,6 +102,60 @@ router.post('/post', authenticateToken, (request: Request, response: Response) =
     });
 })
 
+/**
+ * Get all transactions for a particular savings
+ */
+router.get('/get/:savingId', authenticateToken, (request: Request, response: Response) => {
+    /**
+     * GET /savings/get
+     * AUTH: Bearer <token>
+     */
+
+    const savingId = request.params.savingId;
+
+    // Get user
+    const user = request.body.user;
+
+    // Get user's saving goals
+    pool.query(`SELECT saving.*, saving_goal.name as goal_name FROM saving LEFT JOIN saving_goal ON saving_goal.id = saving.goal_id WHERE saving_goal.id = '${savingId}'`, (error: any, result: any) => {
+        if (error) {
+            console.log(error);
+            response
+                .status(500)
+                .json({
+                    message: 'An error occurred',
+                    status: 'failed'
+                });
+        }
+
+        // If user has no saving goals
+        if (result.length === 0) {
+            response
+                .status(200)
+                .json({
+                    message: 'No transactions foound',
+                    status: 'success'
+                });
+        }
+
+        // If user has saving goals
+        else {
+            const transactions = result.rows;
+            // If user has saving goals
+            response
+                .status(200)
+                .json({
+                    message: 'Successful',
+                    status: 'success',
+                    data: transactions,
+                });
+        }
+    });
+})
+
+/**
+ * Get all transactions for a particular user
+ */
 router.get('/get', authenticateToken, (request: Request, response: Response) => {
     /**
      * GET /savings/get
@@ -147,6 +201,8 @@ router.get('/get', authenticateToken, (request: Request, response: Response) => 
         }
     });
 })
+
+
 
 // Middleware for handling JWT validation
 function authenticateToken(request: Request, response: Response, next: any) {
