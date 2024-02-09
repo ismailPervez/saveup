@@ -11,17 +11,36 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const router = (0, express_1.Router)();
+/**
+ * Registration endpoint for user
+ */
 router.post('/register', (request, response) => {
     /**
      * POST /users/register
      * DATA: {username: string, password: string}
      */
-    const { username, password } = request.body;
-    if (!username) {
+    const { firstName, lastName, email, password } = request.body;
+    if (!email) {
         response
             .status(400)
             .json({
-            message: 'Username is required',
+            message: 'Email is required',
+            status: 'failed'
+        });
+    }
+    else if (!firstName) {
+        response
+            .status(400)
+            .json({
+            message: 'First name is required',
+            status: 'failed'
+        });
+    }
+    else if (!lastName) {
+        response
+            .status(400)
+            .json({
+            message: 'Last name is required',
             status: 'failed'
         });
     }
@@ -34,7 +53,7 @@ router.post('/register', (request, response) => {
         });
     }
     // Check if user with username already exists
-    database_1.default.query(`SELECT * FROM users WHERE username = '${username}'`, (error, result) => {
+    database_1.default.query(`SELECT * FROM users WHERE email = '${email}'`, (error, result) => {
         if (error) {
             console.log(error);
         }
@@ -43,7 +62,7 @@ router.post('/register', (request, response) => {
             return response
                 .status(400)
                 .json({
-                message: 'Username is already taken',
+                message: 'Email is already taken',
                 status: 'failed'
             });
         }
@@ -51,7 +70,7 @@ router.post('/register', (request, response) => {
     // Hash password
     const hashedPassword = bcrypt.hashSync(password, saltRounds);
     // Create user in the database
-    database_1.default.query(`INSERT INTO users (username, password) VALUES ('${username}', '${hashedPassword}')`, (error, result) => {
+    database_1.default.query(`INSERT INTO users (first_name, last_name, email, password) VALUES ('${firstName}', '${lastName}', '${email}', '${hashedPassword}')`, (error, result) => {
         if (error) {
             console.log(error);
         }
@@ -63,17 +82,20 @@ router.post('/register', (request, response) => {
         status: 'success'
     });
 });
+/**
+ * Login endpoint for user
+ */
 router.post('/login', (request, response) => {
     /**
      * POST /users/login
      * DATA: {username: string, password: string}
      */
-    const { username, password } = request.body;
-    if (!username) {
+    const { email, password } = request.body;
+    if (!email) {
         response
             .status(400)
             .json({
-            message: 'Username is required',
+            message: 'Email is required',
             status: 'failed'
         });
     }
@@ -86,7 +108,7 @@ router.post('/login', (request, response) => {
         });
     }
     // Check if user with user exists
-    database_1.default.query(`SELECT * FROM users WHERE username = '${username}'`, (error, result) => {
+    database_1.default.query(`SELECT * FROM users WHERE email = '${email}'`, (error, result) => {
         if (error) {
             console.log(error);
         }
@@ -121,13 +143,13 @@ router.post('/login', (request, response) => {
                 });
             }
             // Create token
-            const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET);
+            const token = jwt.sign({ id: user.id, email: user.email, first_name: user.first_name, last_name: user.last_name }, process.env.JWT_SECRET);
             // Set token as httpOnly cookie
             response.cookie('token', token, {
                 httpOnly: true,
-                secure: false,
-                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-                sameSite: 'none'
+                // secure: false,
+                // maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+                // sameSite: 'none'
             });
             response
                 .status(200)
@@ -138,5 +160,23 @@ router.post('/login', (request, response) => {
             });
         }
     });
+});
+/**
+ * Reset password endpoing for user
+ */
+router.post('/reset-password', (request, response) => {
+    const { email } = request.body;
+    if (!email) {
+        response
+            .status(404)
+            .json({
+            message: 'Email is required',
+            status: 'failed'
+        });
+    }
+    // Create a JWT with time limit of 1 hour for reset
+    // const tokenExpiryTime = new Date() + time()
+    const token = jwt.sign({ email: email, expires_at: 1 }, process.env.JWT_SECRET);
+    // Send reset email
 });
 exports.default = router;
